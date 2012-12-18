@@ -7,10 +7,10 @@
 -- number of reducers, should be - say - four times the number of reducer slots in the Hadoop cluster
 SET default_parallel 10;
 -- use gzip compression in result and intermediary files
-SET mapred.output.compress true;
-SET mapred.output.compression.codec org.apache.hadoop.io.compress.GzipCodec;
-SET pig.tmpfilecompression true;
-SET pig.tmpfilecompression.codec gz;
+--SET mapred.output.compress true;
+--SET mapred.output.compression.codec org.apache.hadoop.io.compress.GzipCodec;
+--SET pig.tmpfilecompression true;
+--SET pig.tmpfilecompression.codec gz;
 
 
 -- CC libs
@@ -36,11 +36,23 @@ links = FOREACH html GENERATE url, FLATTEN(nl.cwi.ins1.norvigaward.LinkFinder(ht
 
 linksD = DISTINCT links;
 
+
 -- filter out local links and xhtml-mandated links to w3.org (stupid...)
 noLocalLinks = FILTER linksD BY de.wbsg.loddesc.functions.PayLevelDomain(url) != de.wbsg.loddesc.functions.PayLevelDomain(link) AND de.wbsg.loddesc.functions.PayLevelDomain(link) != 'w3.org';
 
 -- guess language for all input pages
 langs = FOREACH html GENERATE url, nl.cwi.ins1.norvigaward.LangGuesser(html) AS lang;
+
+
+-- join languages to links table, once for source url (inner join), once for target link (outer join, since we dont know whether linked page is in crawl)
+
+
+joined = JOIN noLocalLinks BY url, langs BY url;
+joinedSmall = FOREACH joined GENERATE noLocalLinks::url AS url, langs::lang AS urlLang, noLocalLinks::link AS link;
+joinedLinks = JOIN joinedSmall BY link LEFT OUTER, langs BY url;
+joinedLinksSmall = FOREACH joinedLinks GENERATE joinedSmall::url AS url, joinedSmall::urlLang AS urlLang, joinedSmall::link AS link, langs::lang as linkLang;
+ 
+STORE joinedLinksSmall INTO 'babelTestResult' USING PigStorage('	');
 
 
 -- make some basic statistics about languages in cc
@@ -61,16 +73,6 @@ urlGroupsCountsSorted = ORDER urlGroupsCounts BY urls DESC;
 
 STORE urlGroupsCountsSorted INTO 'languageDistributionUrls' USING PigStorage('	');
 
-
--- join languages to links table, once for source url (inner join), once for target link (outer join, since we dont know whether linked page is in crawl)
-
-
-joined = JOIN noLocalLinks BY url, langs BY url;
-joinedSmall = FOREACH joined GENERATE noLocalLinks::url AS url, langs::lang AS urlLang, noLocalLinks::link AS link;
-joinedLinks = JOIN joinedSmall BY link LEFT OUTER, langs BY url;
-joinedLinksSmall = FOREACH joinedLinks GENERATE joinedSmall::url AS url, joinedSmall::urlLang AS urlLang, joinedSmall::link AS link, langs::lang as linkLang;
-
-STORE joinedLinksSmall INTO 'babelTestResult' USING PigStorage('	');
 
 --dump jm;
 -- de.wbsg.loddesc.functions.TopLevelDomain(pld)
