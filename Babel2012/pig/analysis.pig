@@ -81,3 +81,4 @@ STORE joinedLinksSmall INTO 'babelTestResult' USING PigStorage('	');
 -- group by and count by pld, tld and urls
 -- TODO: make nice world map with arrows?! or matrix
 -- TODO: language distribution in CC dataset, #urls, #plds
+
