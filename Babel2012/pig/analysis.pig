@@ -46,7 +46,7 @@ joinedSmall = FOREACH joined GENERATE noLocalLinks::url AS url, langs::lang AS u
 joinedLinks = JOIN joinedSmall BY link LEFT OUTER, langs BY url;
 joinedLinksSmall = FOREACH joinedLinks GENERATE joinedSmall::url AS url, joinedSmall::urlLang AS urlLang, joinedSmall::link AS link, langs::lang as linkLang;
 
-STORE joinedLinksSmall INTO 'babelResult' USING PigStorage('	');
+STORE joinedLinksSmall INTO 'babelTestResult' USING PigStorage('	');
 
 --dump jm;
 -- de.wbsg.loddesc.functions.TopLevelDomain(pld)
