@@ -4,14 +4,16 @@ import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.log4j.Logger;
 import org.apache.pig.EvalFunc;
-import org.apache.pig.backend.executionengine.ExecException;
 import org.apache.pig.data.BagFactory;
 import org.apache.pig.data.DataBag;
 import org.apache.pig.data.Tuple;
 import org.apache.pig.data.TupleFactory;
 
 public class LinkFinder extends EvalFunc<DataBag> {
+
+	private static Logger log = Logger.getLogger(LinkFinder.class);
 
 	TupleFactory mTupleFactory = TupleFactory.getInstance();
 	BagFactory mBagFactory = BagFactory.getInstance();
@@ -32,9 +34,10 @@ public class LinkFinder extends EvalFunc<DataBag> {
 				output.add(mTupleFactory.newTuple(m.group(1)));
 			}
 			return output;
-		} catch (ExecException ee) {
-			throw ee;
+		} catch (Exception ee) {
+			log.warn("Unable to process tuple", ee);
 		}
+		return mBagFactory.newDefaultBag();
 	}
 
 }

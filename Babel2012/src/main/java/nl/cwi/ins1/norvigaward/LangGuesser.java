@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.apache.log4j.Logger;
+
 import org.apache.pig.EvalFunc;
 import org.apache.pig.data.Tuple;
 
@@ -14,6 +16,9 @@ import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 
 public class LangGuesser extends EvalFunc<String> {
+
+	private static Logger log = Logger.getLogger(LangGuesser.class);
+
 	static {
 		File tempdir;
 		try {
@@ -34,14 +39,10 @@ public class LangGuesser extends EvalFunc<String> {
 
 			DetectorFactory.loadProfile(tempdir);
 			deleteFolder(tempdir);
-			
+
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
-	}
-
-	public static void main(String[] args) {
-		//
 	}
 
 	@Override
@@ -55,8 +56,9 @@ public class LangGuesser extends EvalFunc<String> {
 			return detector.detect();
 
 		} catch (Exception e) {
-			throw new IOException("Caught exception processing input row ", e);
+			log.debug("Caught exception processing input row ", e);
 		}
+		return "en"; // most likely...
 	}
 
 	public static void unZip(InputStream zippedIS, File outputFolder)
@@ -82,19 +84,19 @@ public class LangGuesser extends EvalFunc<String> {
 		zis.closeEntry();
 		zis.close();
 	}
-	
+
 	public static void deleteFolder(File folder) {
-	    File[] files = folder.listFiles();
-	    if(files!=null) { //some JVMs return null for empty dirs
-	        for(File f: files) {
-	            if(f.isDirectory()) {
-	                deleteFolder(f);
-	            } else {
-	                f.delete();
-	            }
-	        }
-	    }
-	    folder.delete();
+		File[] files = folder.listFiles();
+		if (files != null) { // some JVMs return null for empty dirs
+			for (File f : files) {
+				if (f.isDirectory()) {
+					deleteFolder(f);
+				} else {
+					f.delete();
+				}
+			}
+		}
+		folder.delete();
 	}
 
 }
