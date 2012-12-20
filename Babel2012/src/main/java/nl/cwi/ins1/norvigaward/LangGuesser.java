@@ -45,20 +45,26 @@ public class LangGuesser extends EvalFunc<String> {
 		}
 	}
 
+	public static String DEFAULTLANG = "en";
 	@Override
 	public String exec(Tuple input) throws IOException {
+		
 		if (input == null || input.size() == 0)
-			return null;
+			return DEFAULTLANG;
 		try {
-			String str = (String) input.get(0);
+			String html = (String) input.get(0);
+			if (html == null || html.length() == 0) {
+				return DEFAULTLANG;
+			}
+			String plaintext = html.replaceAll("\\<.*?\\>", "");
 			Detector detector = DetectorFactory.create();
-			detector.append(str);
+			detector.append(plaintext);
 			return detector.detect();
 
 		} catch (Exception e) {
 			log.debug("Caught exception processing input row ", e);
 		}
-		return "en"; // most likely...
+		return DEFAULTLANG;
 	}
 
 	public static void unZip(InputStream zippedIS, File outputFolder)
