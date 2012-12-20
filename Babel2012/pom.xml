@@ -92,12 +92,6 @@
         <version>0.20.2</version>
       </dependency>
     
-	   <dependency>
-        <groupId>langdetect</groupId>
-        <artifactId>langdetect</artifactId>
-        <version>09-13-2011</version>
-      </dependency>
-    
     
     		<!-- Logging -->
 		<dependency>

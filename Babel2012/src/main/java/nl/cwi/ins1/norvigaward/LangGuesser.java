@@ -57,6 +57,7 @@ public class LangGuesser extends EvalFunc<String> {
 				return DEFAULTLANG;
 			}
 			String plaintext = html.replaceAll("\\<.*?\\>", "");
+			
 			Detector detector = DetectorFactory.create();
 			detector.append(plaintext);
 			return detector.detect();
