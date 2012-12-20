@@ -23,21 +23,24 @@ public class LinkFinder extends EvalFunc<DataBag> {
 
 	@Override
 	public DataBag exec(Tuple input) throws IOException {
-		if (input == null || input.size() == 0)
-			return null;
+		DataBag output = mBagFactory.newDefaultBag();
+		if (input == null || input.size() == 0) {
+			return output;
+		}
 		try {
-
-			Matcher m = p.matcher((String) input.get(0));
-
-			DataBag output = mBagFactory.newDefaultBag();
+			String html = (String) input.get(0);
+			if (html == null || html.length() == 0) {
+				return output;
+			}
+			Matcher m = p.matcher(html);
 			while (m.find()) {
 				output.add(mTupleFactory.newTuple(m.group(1)));
 			}
 			return output;
 		} catch (Exception ee) {
-			log.warn("Unable to process tuple", ee);
+			log.warn("Unable to process tuple " + input, ee);
 		}
-		return mBagFactory.newDefaultBag();
+		return output;
 	}
 
 }
