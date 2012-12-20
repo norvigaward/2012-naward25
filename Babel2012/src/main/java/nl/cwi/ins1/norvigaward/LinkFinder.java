@@ -21,6 +21,8 @@ public class LinkFinder extends EvalFunc<DataBag> {
 	private static final Pattern p = Pattern
 			.compile("(https?://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|])");
 
+	private static final int MAXLINKS = 100;
+	
 	@Override
 	public DataBag exec(Tuple input) throws IOException {
 		DataBag output = mBagFactory.newDefaultBag();
@@ -32,9 +34,12 @@ public class LinkFinder extends EvalFunc<DataBag> {
 			if (html == null || html.length() == 0) {
 				return output;
 			}
+			int i = 0;
+			
 			Matcher m = p.matcher(html);
-			while (m.find()) {
+			while (m.find() && i < MAXLINKS) {
 				output.add(mTupleFactory.newTuple(m.group(1)));
+				i++;
 			}
 			return output;
 		} catch (Exception ee) {

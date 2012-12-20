@@ -44,6 +44,8 @@ public class LangGuesser extends EvalFunc<String> {
 			e1.printStackTrace();
 		}
 	}
+	
+	public static final int MAXLEN = 10000;
 
 	public static String DEFAULTLANG = "en";
 	@Override
@@ -56,6 +58,9 @@ public class LangGuesser extends EvalFunc<String> {
 			if (html == null || html.length() == 0) {
 				return DEFAULTLANG;
 			}
+			
+			html = html.substring(0, Math.min(html.length(), MAXLEN));
+			
 			String plaintext = html.replaceAll("\\<.*?\\>", "");
 			
 			Detector detector = DetectorFactory.create();
