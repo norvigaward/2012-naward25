@@ -1,6 +1,6 @@
 -- CC libs
 register /ufs/hannes/commoncrawl-examples/lib/*.jar; 
-register /ufs/hannes/commoncrawl-examples/dist/lib/commoncrawl-examples-1.0.1.jar;
+register /ufs/hannes/commoncrawl-examples/dist/lib/commoncrawl-examples-1.0.1-HM.jar;
 
 register /ufs/hannes/git/Babel2012/Babel2012/target/babel2012-1.0-SNAPSHOT.jar;
 register /ufs/hannes/git/Babel2012/Babel2012/lib-pig/loddesc-core-0.1-with-dependencies.jar;
