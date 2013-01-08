@@ -22,7 +22,8 @@ rawdata = LOAD '/ufs/hannes/commoncrawl-examples/data/*.arc.gz' USING org.common
 -- filter out non-html resources
 html = FILTER rawdata BY TRIM(LOWER(type)) == 'text/html';
 
-raw = FOREACH html GENERATE url, de.wbsg.loddesc.functions.Domain(url) as domain, nl.cwi.ins1.norvigaward.LangGuesser(html) AS lang, nl.cwi.ins1.norvigaward.LinkFinder(html) as links;
+
+raw = FOREACH html GENERATE url, de.wbsg.loddesc.functions.Domain(url) as domain, nl.cwi.ins1.norvigaward.LangGuesser(SUBSTRING(html,0,10000)) AS lang, nl.cwi.ins1.norvigaward.LinkFinder(SUBSTRING(html,0,10000)) as links;
 
 
 -- find main language for all domains in dataset (count number of urls for domain with a single language, then take most popular lang)
